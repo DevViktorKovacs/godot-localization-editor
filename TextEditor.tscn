@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://TextEditor.cs" type="Script" id=1]
+
+[node name="TextEditor" type="Control"]
+margin_right = 242.0
+margin_bottom = 48.0
+script = ExtResource( 1 )
+
+[node name="Label" type="Label" parent="."]
+margin_left = 3.53551
+margin_top = 17.6778
+margin_right = 208.536
+margin_bottom = 76.6777
+text = "Name:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextEdit" type="TextEdit" parent="."]
+margin_left = 60.0
+margin_top = 12.0
+margin_right = 360.0
+margin_bottom = 37.0
+context_menu_enabled = false
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.1
+
+[connection signal="breakpoint_toggled" from="TextEdit" to="." method="_on_TextEdit_breakpoint_toggled"]
+[connection signal="focus_entered" from="TextEdit" to="." method="_on_TextEdit_focus_entered"]
+[connection signal="focus_exited" from="TextEdit" to="." method="_on_TextEdit_focus_exited"]
+[connection signal="text_changed" from="TextEdit" to="." method="_on_TextEdit_text_changed"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
