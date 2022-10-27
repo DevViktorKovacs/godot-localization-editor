@@ -22,7 +22,7 @@ margin_bottom = 281.0
 [node name="Keys" type="ItemList" parent="."]
 margin_left = 350.0
 margin_top = 81.0
-margin_right = 700.0
+margin_right = 668.0
 margin_bottom = 281.0
 
 [node name="TargetLanguage" type="ItemList" parent="."]
@@ -60,12 +60,28 @@ margin_right = 129.0
 margin_bottom = 305.0
 text = "Reference text:"
 
+[node name="ReferenceTextLabel" type="Label" parent="."]
+modulate = Color( 0.882353, 0.796078, 0.0901961, 1 )
+margin_left = 127.0
+margin_top = 291.0
+margin_right = 230.0
+margin_bottom = 305.0
+text = "Reference_Text"
+
 [node name="Label5" type="Label" parent="."]
 margin_left = 26.0
 margin_top = 441.0
 margin_right = 129.0
 margin_bottom = 455.0
 text = "Target text:"
+
+[node name="TargetTextLabel" type="Label" parent="."]
+modulate = Color( 0.882353, 0.796078, 0.0901961, 1 )
+margin_left = 102.0
+margin_top = 441.0
+margin_right = 205.0
+margin_bottom = 455.0
+text = "Target_Text"
 
 [node name="Label2" type="Label" parent="."]
 margin_left = 188.0
@@ -84,13 +100,14 @@ text = "Keys:"
 [node name="ReferenceTextEdit" type="TextEdit" parent="."]
 margin_left = 26.0
 margin_top = 311.0
-margin_right = 701.0
+margin_right = 666.0
 margin_bottom = 431.0
+readonly = true
 
 [node name="TargetTextEdit" type="TextEdit" parent="."]
 margin_left = 26.0
 margin_top = 461.0
-margin_right = 701.0
+margin_right = 666.0
 margin_bottom = 581.0
 
 [node name="CurrentKey" type="Label" parent="."]
@@ -101,6 +118,43 @@ margin_right = 464.0
 margin_bottom = 75.0
 text = "Current_Key"
 
+[node name="Button2" type="Button" parent="."]
+margin_left = 677.0
+margin_top = 463.0
+margin_right = 804.0
+margin_bottom = 483.0
+text = "Tranlsate with A.I."
+
+[node name="Button3" type="Button" parent="."]
+margin_left = 830.0
+margin_top = 463.0
+margin_right = 957.0
+margin_bottom = 483.0
+text = "Tranlsate all with A.I."
+
+[node name="TextEdit" type="TextEdit" parent="."]
+margin_left = 677.0
+margin_top = 518.0
+margin_right = 1007.0
+margin_bottom = 548.0
+
+[node name="Label6" type="Label" parent="."]
+margin_left = 677.0
+margin_top = 500.0
+margin_right = 729.0
+margin_bottom = 514.0
+text = "API key:"
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+margin_left = 677.0
+margin_top = 555.0
+margin_right = 1007.0
+margin_bottom = 575.0
+step = 1.0
+value = 20.0
+
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
+[connection signal="item_selected" from="ReferenceLanguage" to="." method="_on_ReferenceLanguage_item_selected"]
 [connection signal="item_selected" from="Keys" to="." method="_on_Keys_item_selected"]
+[connection signal="item_selected" from="TargetLanguage" to="." method="_on_TargetLanguage_item_selected"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

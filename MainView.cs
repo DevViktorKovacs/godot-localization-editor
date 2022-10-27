@@ -8,45 +8,71 @@ public class MainView : Node2D
 {
 	Label CurrentKey;
 
+	Label TargetTextLabel;
+
+	Label ReferenceTextLabel;
+
 	ItemList TargetLanguage;
+
+	ItemList ReferenceLanguage;
 
 	TextEdit ReferenceTextEdit;
 
+	TextEdit TargetTextEdit;
+
 	ItemList Keys;
 
-	TextEditor textEditor;
+	TextEditor TextEditor;
 
-	FileDialog fileDialog;
+	FileDialog FileDialog;
 
 	static string fontPath = "res://fonts/Chinese.tres";
 
 	Dictionary<int, LocalizedTexts> localizations;
 
+	int targetTextIndex = 1;
+
+	int referenceTextIndex = 2;
+
+	string selectedKey;
+
 	public override void _Ready()
 	{
-		fileDialog = this.GetChild<FileDialog>();
+		FileDialog = this.GetChild<FileDialog>();
 
-		textEditor = this.GetChild<TextEditor>();
+		TextEditor = this.GetChild<TextEditor>();
 
-		textEditor.TextChanged += TextEditor_TextChanged;
+		TextEditor.TextChanged += TextEditor_TextChanged;
 
-		textEditor.SetLabelText("Search:");
+		TextEditor.SetLabelText("Search:");
 
-		textEditor.SetFont(fontPath);
+		TextEditor.SetFont(fontPath);
 
 		localizations = new Dictionary<int, LocalizedTexts>();
 
 		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
+		TargetTextEdit = (TextEdit)this.GetChildByName(nameof(TargetTextEdit));
+
 		TargetLanguage = (ItemList) this.GetChildByName(nameof(TargetLanguage));
+
+		ReferenceLanguage = (ItemList)this.GetChildByName(nameof(ReferenceLanguage));
 
 		Keys = (ItemList)this.GetChildByName(nameof(Keys));
 
 		CurrentKey = (Label)this.GetChildByName(nameof(CurrentKey));
 
+		TargetTextLabel = (Label)this.GetChildByName(nameof(TargetTextLabel));
+
+		ReferenceTextLabel = (Label)this.GetChildByName(nameof(ReferenceTextLabel));
+
 		CurrentKey.Visible = false;
 
-		fileDialog.Filters = new string[] { "*.csv" };
+		TargetTextLabel.Visible = false;
+
+		ReferenceTextLabel.Visible = false;
+
+		FileDialog.Filters = new string[] { "*.csv" };
 	}
 
 	private void TextEditor_TextChanged(object sender, TextChangedEventArgs e)
@@ -57,9 +83,9 @@ public class MainView : Node2D
 
 	private void _on_Button_button_up()
 	{
-		if (!fileDialog.Visible)
+		if (!FileDialog.Visible)
 		{
-			fileDialog.Popup_();
+			FileDialog.Popup_();
 		}
 	}
 	
@@ -67,11 +93,22 @@ public class MainView : Node2D
 	{
 		var key = Keys.GetItemText(index);
 
+		selectedKey = key;
+
 		CurrentKey.Text = key;
 
 		CurrentKey.Visible = true;
 
-		ReferenceTextEdit.Text = localizations[2].Texts[key];
+		UpateTextFields();
+	}
+
+	private void UpateTextFields()
+	{
+		if (selectedKey == null) return;
+
+		ReferenceTextEdit.Text = localizations[referenceTextIndex].Texts[selectedKey];
+
+		TargetTextEdit.Text = localizations[targetTextIndex].Texts[selectedKey];
 	}
 	
 	private void _on_FileDialog_file_selected(String path)
@@ -94,10 +131,14 @@ public class MainView : Node2D
 		{
 			TargetLanguage.AddItem(languages[i]);
 
+			ReferenceLanguage.AddItem(languages[i]);
+
 			localizations.Add(i, new LocalizedTexts() { Index = i, Locale = languages[i], Texts = new Dictionary<string, string>() });
 		}
 
 		TargetLanguage.DisableTooltips();
+
+		ReferenceLanguage.DisableTooltips();
 
 		for (int i = 1; i < lines.Count; i++)
 		{
@@ -108,6 +149,30 @@ public class MainView : Node2D
 
 		Keys.DisableTooltips();
 
+	}
+	
+		
+	private void _on_TargetLanguage_item_selected(int index)
+	{
+		targetTextIndex = index +1;
+
+		TargetTextLabel.Text = localizations[targetTextIndex].Locale;
+
+		TargetTextLabel.Visible = true;
+
+		UpateTextFields();
+	}
+
+
+	private void _on_ReferenceLanguage_item_selected(int index)
+	{
+		referenceTextIndex = index +1;
+
+		ReferenceTextLabel.Text = localizations[referenceTextIndex].Locale;
+
+		ReferenceTextLabel.Visible = true;
+
+		UpateTextFields();
 	}
 
 	private void ProcessLine(string[] line)
@@ -125,6 +190,8 @@ public class MainView : Node2D
 		}
 	}
 }
+
+
 
 
 
