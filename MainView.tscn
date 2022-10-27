@@ -7,29 +7,29 @@
 script = ExtResource( 1 )
 
 [node name="Button" type="Button" parent="."]
-margin_left = 38.0
-margin_top = 40.0
-margin_right = 85.0
-margin_bottom = 60.0
+margin_left = 26.0
+margin_top = 21.0
+margin_right = 73.0
+margin_bottom = 41.0
 text = "Open"
 
 [node name="ReferenceLanguage" type="ItemList" parent="."]
-margin_left = 200.0
-margin_top = 100.0
-margin_right = 344.0
-margin_bottom = 400.0
+margin_left = 188.0
+margin_top = 81.0
+margin_right = 332.0
+margin_bottom = 281.0
 
 [node name="Keys" type="ItemList" parent="."]
-margin_left = 362.0
-margin_top = 100.0
-margin_right = 712.0
-margin_bottom = 400.0
+margin_left = 350.0
+margin_top = 81.0
+margin_right = 700.0
+margin_bottom = 281.0
 
 [node name="TargetLanguage" type="ItemList" parent="."]
-margin_left = 38.0
-margin_top = 100.0
-margin_right = 182.0
-margin_bottom = 400.0
+margin_left = 26.0
+margin_top = 81.0
+margin_right = 170.0
+margin_bottom = 281.0
 
 [node name="FileDialog" type="FileDialog" parent="."]
 margin_left = 100.0
@@ -41,31 +41,66 @@ current_dir = "/Users/Viktor/Documents/GitHub/godot-localization-editor"
 current_path = "/Users/Viktor/Documents/GitHub/godot-localization-editor/"
 
 [node name="TextEditor" parent="." instance=ExtResource( 2 )]
-margin_left = 102.0
-margin_top = 27.0
-margin_right = 344.0
-margin_bottom = 75.0
+margin_left = 90.0
+margin_top = 8.0
+margin_right = 332.0
+margin_bottom = 56.0
 
 [node name="Label" type="Label" parent="."]
-margin_left = 38.0
-margin_top = 80.0
-margin_right = 101.0
-margin_bottom = 94.0
+margin_left = 26.0
+margin_top = 61.0
+margin_right = 129.0
+margin_bottom = 75.0
 text = "Target language:"
 
+[node name="Label4" type="Label" parent="."]
+margin_left = 26.0
+margin_top = 291.0
+margin_right = 129.0
+margin_bottom = 305.0
+text = "Reference text:"
+
+[node name="Label5" type="Label" parent="."]
+margin_left = 26.0
+margin_top = 441.0
+margin_right = 129.0
+margin_bottom = 455.0
+text = "Target text:"
+
 [node name="Label2" type="Label" parent="."]
-margin_left = 200.0
-margin_top = 80.0
-margin_right = 303.0
-margin_bottom = 94.0
+margin_left = 188.0
+margin_top = 61.0
+margin_right = 316.0
+margin_bottom = 75.0
 text = "Reference language:"
 
 [node name="Label3" type="Label" parent="."]
-margin_left = 362.0
-margin_top = 80.0
-margin_right = 490.0
-margin_bottom = 94.0
+margin_left = 350.0
+margin_top = 61.0
+margin_right = 478.0
+margin_bottom = 75.0
 text = "Keys:"
 
+[node name="ReferenceTextEdit" type="TextEdit" parent="."]
+margin_left = 26.0
+margin_top = 311.0
+margin_right = 701.0
+margin_bottom = 431.0
+
+[node name="TargetTextEdit" type="TextEdit" parent="."]
+margin_left = 26.0
+margin_top = 461.0
+margin_right = 701.0
+margin_bottom = 581.0
+
+[node name="CurrentKey" type="Label" parent="."]
+modulate = Color( 0.882353, 0.796078, 0.0901961, 1 )
+margin_left = 388.0
+margin_top = 61.0
+margin_right = 464.0
+margin_bottom = 75.0
+text = "Current_Key"
+
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
+[connection signal="item_selected" from="Keys" to="." method="_on_Keys_item_selected"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

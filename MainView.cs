@@ -1,17 +1,27 @@
 using Godot;
+using System.Collections.Generic;
 using godotlocalizationeditor;
 using System;
 using System.Linq;
 
 public class MainView : Node2D
 {
-	FileDialog fileDialog;
+	Label CurrentKey;
 
 	ItemList TargetLanguage;
+
+	TextEdit ReferenceTextEdit;
 
 	ItemList Keys;
 
 	TextEditor textEditor;
+
+	FileDialog fileDialog;
+
+	static string fontPath = "res://fonts/Chinese.tres";
+
+	Dictionary<int, LocalizedTexts> localizations;
+
 	public override void _Ready()
 	{
 		fileDialog = this.GetChild<FileDialog>();
@@ -22,11 +32,19 @@ public class MainView : Node2D
 
 		textEditor.SetLabelText("Search:");
 
-		textEditor.SetFont("res://fonts/Chinese.tres");
+		textEditor.SetFont(fontPath);
+
+		localizations = new Dictionary<int, LocalizedTexts>();
+
+		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
 		TargetLanguage = (ItemList) this.GetChildByName(nameof(TargetLanguage));
 
 		Keys = (ItemList)this.GetChildByName(nameof(Keys));
+
+		CurrentKey = (Label)this.GetChildByName(nameof(CurrentKey));
+
+		CurrentKey.Visible = false;
 
 		fileDialog.Filters = new string[] { "*.csv" };
 	}
@@ -34,6 +52,7 @@ public class MainView : Node2D
 	private void TextEditor_TextChanged(object sender, TextChangedEventArgs e)
 	{
 		DebugHelper.PrettyPrintVerbose($"Searched text: {e.NewText}", ConsoleColor.Green);
+
 	}
 
 	private void _on_Button_button_up()
@@ -42,6 +61,17 @@ public class MainView : Node2D
 		{
 			fileDialog.Popup_();
 		}
+	}
+	
+	private void _on_Keys_item_selected(int index)
+	{
+		var key = Keys.GetItemText(index);
+
+		CurrentKey.Text = key;
+
+		CurrentKey.Visible = true;
+
+		ReferenceTextEdit.Text = localizations[2].Texts[key];
 	}
 	
 	private void _on_FileDialog_file_selected(String path)
@@ -63,19 +93,41 @@ public class MainView : Node2D
 		for (int i = 1; i < languages.Length; i++)
 		{
 			TargetLanguage.AddItem(languages[i]);
+
+			localizations.Add(i, new LocalizedTexts() { Index = i, Locale = languages[i], Texts = new Dictionary<string, string>() });
 		}
 
 		TargetLanguage.DisableTooltips();
 
 		for (int i = 1; i < lines.Count; i++)
 		{
-			Keys.AddItem(lines[i].Split(";").First());
+			var line = lines[i].Split(";");
+
+			ProcessLine(line);
 		}
 
 		Keys.DisableTooltips();
 
 	}
+
+	private void ProcessLine(string[] line)
+	{
+		Keys.AddItem(line.First());
+
+		for (int c = 1; c < line.Length; c++)
+		{
+			if (localizations[c] == null) continue;
+			
+			if (!localizations[c].Texts.Any(t => t.Key == line.First()))
+			{
+				localizations[c].Texts.Add(line.First(), line[c]);
+			}
+		}
+	}
 }
+
+
+
 
 
 
