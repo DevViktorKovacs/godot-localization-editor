@@ -30,6 +30,8 @@ public class MainView : Node2D
 
 	FileDialog FileDialog;
 
+	CheckBox MockCheckBox;
+
 	static string fontPath = "res://fonts/Chinese.tres";
 
 	Dictionary<int, LocalizedTexts> localizations;
@@ -73,6 +75,10 @@ public class MainView : Node2D
 		TargetTextLabel = (Label)this.GetChildByName(nameof(TargetTextLabel));
 
 		ReferenceTextLabel = (Label)this.GetChildByName(nameof(ReferenceTextLabel));
+
+		MockCheckBox = this.GetChild<CheckBox>();
+
+		MockCheckBox.Pressed = true;
 
 		CurrentKey.Visible = false;
 
@@ -192,10 +198,12 @@ public class MainView : Node2D
 	{
 		
 		var auth = $"Authorization: DeepL-Auth-Key {APIkey.Text}";
+
 		var contentTpye = "Content-Type: application/x-www-form-urlencoded";
 
+		var url = MockCheckBox.Pressed ? "http://localhost:3000/v2/translate" : "https://api-free.deepl.com/v2/translate";
 
-		hTTPRequest.Request("https://api-free.deepl.com/v2/translate", new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, "text=Hello%2C%20world!&target_lang=DE");
+		hTTPRequest.Request(url, new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, "text=Hello%2C%20world!&target_lang=DE");
 
 	}
 

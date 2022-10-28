@@ -20,7 +20,7 @@ __meta__ = {
 [node name="TextEdit" type="TextEdit" parent="."]
 margin_left = 60.0
 margin_top = 12.0
-margin_right = 360.0
+margin_right = 330.0
 margin_bottom = 37.0
 context_menu_enabled = false
 
