@@ -8,6 +8,8 @@ using System.Net;
 
 public class MainView : Node2D
 {
+	ITranslationManager translationManager;
+
 	Label CurrentKey;
 
 	Label TargetTextLabel;
@@ -32,20 +34,14 @@ public class MainView : Node2D
 
 	CheckBox MockCheckBox;
 
-	static string fontPath = "res://fonts/Chinese.tres";
-
-	Dictionary<int, LocalizedTexts> localizations;
-
-	int targetTextIndex = 1;
-
-	int referenceTextIndex = 2;
-
-	string selectedKey;
-
 	HTTPRequest hTTPRequest;
+
+	static string fontPath = "res://fonts/Chinese.tres";
 
 	public override void _Ready()
 	{
+		translationManager = new TranslationManager();
+
 		FileDialog = this.GetChild<FileDialog>();
 
 		TextEditor = this.GetChild<TextEditor>();
@@ -56,13 +52,15 @@ public class MainView : Node2D
 
 		TextEditor.SetFont(fontPath);
 
-		localizations = new Dictionary<int, LocalizedTexts>();
-
 		APIkey = (TextEdit)this.GetChildByName(nameof(APIkey));
 
 		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
+		ReferenceTextEdit.SetLangugeSpecificTheme(fontPath);
+
 		TargetTextEdit = (TextEdit)this.GetChildByName(nameof(TargetTextEdit));
+
+		TargetTextEdit.SetLangugeSpecificTheme(fontPath);
 
 		TargetLanguage = (ItemList) this.GetChildByName(nameof(TargetLanguage));
 
@@ -107,11 +105,9 @@ public class MainView : Node2D
 	
 	private void _on_Keys_item_selected(int index)
 	{
-		var key = Keys.GetItemText(index);
+		translationManager.SelectKeyByIndex(index);
 
-		selectedKey = key;
-
-		CurrentKey.Text = key;
+		CurrentKey.Text = translationManager.GetCurrentKey();
 
 		CurrentKey.Visible = true;
 
@@ -120,48 +116,22 @@ public class MainView : Node2D
 
 	private void UpateTextFields()
 	{
-		if (selectedKey == null) return;
+		ReferenceTextEdit.Text = translationManager.GetReferenceText();
 
-		ReferenceTextEdit.Text = localizations[referenceTextIndex].Texts[selectedKey];
-
-		TargetTextEdit.Text = localizations[targetTextIndex].Texts[selectedKey];
+		TargetTextEdit.Text = translationManager.GetTargetText();
 	}
 	
 	private void _on_FileDialog_file_selected(String path)
 	{
-		DebugHelper.PrettyPrintVerbose($"Selected file: {path}", ConsoleColor.Green);
+		translationManager.LoadData(path);
 
-		var file = new File();
+		translationManager.GetAllLanguages().ForEach(l => { TargetLanguage.AddItem(l); ReferenceLanguage.AddItem(l); });
 
-		if (!file.FileExists(path)) return;
-
-		file.Open(path, File.ModeFlags.Read);
-
-		var lines = file.GetLines();
-
-		file.Close();
-
-		var languages = lines.First().Split(";");
-
-		for (int i = 1; i < languages.Length; i++)
-		{
-			TargetLanguage.AddItem(languages[i]);
-
-			ReferenceLanguage.AddItem(languages[i]);
-
-			localizations.Add(i, new LocalizedTexts() { Index = i, Locale = languages[i], Texts = new Dictionary<string, string>() });
-		}
+		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
 
 		TargetLanguage.DisableTooltips();
 
 		ReferenceLanguage.DisableTooltips();
-
-		for (int i = 1; i < lines.Count; i++)
-		{
-			var line = lines[i].Split(";");
-
-			ProcessLine(line);
-		}
 
 		Keys.DisableTooltips();
 
@@ -170,68 +140,35 @@ public class MainView : Node2D
 		
 	private void _on_TargetLanguage_item_selected(int index)
 	{
-		targetTextIndex = index +1;
+		translationManager.SelectTargetLanguage(index);
 
-		TargetTextLabel.Text = localizations[targetTextIndex].Locale;
+		TargetTextLabel.Text = translationManager.GetTargetLanguage();
 
 		TargetTextLabel.Visible = true;
 
 		UpateTextFields();
 	}
-	
-	private void _on_HTTPRequest_request_completed(int result, int response_code, String[] headers, byte[] body)
-	{
-		JSONParseResult json = JSON.Parse(Encoding.UTF8.GetString(body));
-
-		if (response_code == 200)
-		{
-			DebugHelper.PrettyPrintVerbose(json.Result);
-
-			return;
-		}
-
-		DebugHelper.PrettyPrintVerbose($"Http response code: {response_code}");
-	}
-	
-	
-	private void _on_Button2_button_up()
-	{
-		
-		var auth = $"Authorization: DeepL-Auth-Key {APIkey.Text}";
-
-		var contentTpye = "Content-Type: application/x-www-form-urlencoded";
-
-		var url = MockCheckBox.Pressed ? "http://localhost:3000/v2/translate" : "https://api-free.deepl.com/v2/translate";
-
-		hTTPRequest.Request(url, new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, "text=Hello%2C%20world!&target_lang=DE");
-
-	}
-
 
 	private void _on_ReferenceLanguage_item_selected(int index)
 	{
-		referenceTextIndex = index +1;
+		translationManager.SelectReferenceLanguage(index);
 
-		ReferenceTextLabel.Text = localizations[referenceTextIndex].Locale;
+		ReferenceTextLabel.Text = translationManager.GetReferenceLanguage();
 
 		ReferenceTextLabel.Visible = true;
 
 		UpateTextFields();
 	}
 
-	private void ProcessLine(string[] line)
+	private void _on_HTTPRequest_request_completed(int result, int response_code, String[] headers, byte[] body)
 	{
-		Keys.AddItem(line.First());
-
-		for (int c = 1; c < line.Length; c++)
-		{
-			if (localizations[c] == null) continue;
-			
-			if (!localizations[c].Texts.Any(t => t.Key == line.First()))
-			{
-				localizations[c].Texts.Add(line.First(), line[c]);
-			}
-		}
+		translationManager.HandleAPIResponse(result, response_code, headers, body);
+	}
+	
+	
+	private void _on_Button2_button_up()
+	{
+		translationManager.CallAPI(hTTPRequest, APIkey.Text, MockCheckBox.Pressed);
 	}
 }
 
