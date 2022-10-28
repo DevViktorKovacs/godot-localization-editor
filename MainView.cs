@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using godotlocalizationeditor;
 using System;
 using System.Linq;
+using System.Text;
+using System.Net;
 
 public class MainView : Node2D
 {
@@ -20,6 +22,8 @@ public class MainView : Node2D
 
 	TextEdit TargetTextEdit;
 
+	TextEdit APIkey;
+
 	ItemList Keys;
 
 	TextEditor TextEditor;
@@ -36,6 +40,8 @@ public class MainView : Node2D
 
 	string selectedKey;
 
+	HTTPRequest hTTPRequest;
+
 	public override void _Ready()
 	{
 		FileDialog = this.GetChild<FileDialog>();
@@ -49,6 +55,8 @@ public class MainView : Node2D
 		TextEditor.SetFont(fontPath);
 
 		localizations = new Dictionary<int, LocalizedTexts>();
+
+		APIkey = (TextEdit)this.GetChildByName(nameof(APIkey));
 
 		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
@@ -73,6 +81,8 @@ public class MainView : Node2D
 		ReferenceTextLabel.Visible = false;
 
 		FileDialog.Filters = new string[] { "*.csv" };
+
+		hTTPRequest = this.GetChild<HTTPRequest>();
 	}
 
 	private void TextEditor_TextChanged(object sender, TextChangedEventArgs e)
@@ -162,6 +172,32 @@ public class MainView : Node2D
 
 		UpateTextFields();
 	}
+	
+	private void _on_HTTPRequest_request_completed(int result, int response_code, String[] headers, byte[] body)
+	{
+		JSONParseResult json = JSON.Parse(Encoding.UTF8.GetString(body));
+
+		if (response_code == 200)
+		{
+			DebugHelper.PrettyPrintVerbose(json.Result);
+
+			return;
+		}
+
+		DebugHelper.PrettyPrintVerbose($"Http response code: {response_code}");
+	}
+	
+	
+	private void _on_Button2_button_up()
+	{
+		
+		var auth = $"Authorization: DeepL-Auth-Key {APIkey.Text}";
+		var contentTpye = "Content-Type: application/x-www-form-urlencoded";
+
+
+		hTTPRequest.Request("https://api-free.deepl.com/v2/translate", new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, "text=Hello%2C%20world!&target_lang=DE");
+
+	}
 
 
 	private void _on_ReferenceLanguage_item_selected(int index)
@@ -190,6 +226,11 @@ public class MainView : Node2D
 		}
 	}
 }
+
+
+
+
+
 
 
 

@@ -132,7 +132,7 @@ margin_right = 957.0
 margin_bottom = 483.0
 text = "Tranlsate all with A.I."
 
-[node name="TextEdit" type="TextEdit" parent="."]
+[node name="APIkey" type="TextEdit" parent="."]
 margin_left = 677.0
 margin_top = 518.0
 margin_right = 1007.0
@@ -153,8 +153,12 @@ margin_bottom = 575.0
 step = 1.0
 value = 20.0
 
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
 [connection signal="item_selected" from="ReferenceLanguage" to="." method="_on_ReferenceLanguage_item_selected"]
 [connection signal="item_selected" from="Keys" to="." method="_on_Keys_item_selected"]
 [connection signal="item_selected" from="TargetLanguage" to="." method="_on_TargetLanguage_item_selected"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]
+[connection signal="button_up" from="Button2" to="." method="_on_Button2_button_up"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
