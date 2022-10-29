@@ -17,6 +17,8 @@ namespace godotlocalizationeditor
 
         string GetTargetLanguage();
 
+        void UpdateTargetLanguage(string newText);
+
         void SelectKeyByIndex(int index);
 
         string GetCurrentKey();
@@ -31,7 +33,7 @@ namespace godotlocalizationeditor
 
         void CallAPI(HTTPRequest hTTPRequest, string apiKey, bool mock);
 
-        void HandleAPIResponse(int result, int response_code, String[] headers, byte[] body);
+        string HandleAPIResponse(int result, int response_code, String[] headers, byte[] body);
 
         void LoadData(String path);
     }

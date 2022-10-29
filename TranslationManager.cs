@@ -5,30 +5,36 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Web;
 
 namespace godotlocalizationeditor
 {
-    public class TranslationManager: ITranslationManager
+    public class TranslationManager : ITranslationManager
     {
-        public Dictionary<int, LocalizedTexts> localizations { get; set; }
+        Dictionary<int, LocalizedTexts> localizations { get; set; }
 
-        public int targetTextIndex { get; set; }
+        int targetTextIndex { get; set; }
 
-        public int referenceTextIndex { get; set; }
+        int referenceTextIndex { get; set; }
 
-        public string selectedKey { get; set; }
+        string selectedKey { get; set; }
 
-        public List<string> Languages { get; set; }
+        List<string> languagesList { get; set; }
 
-        public List<string> Keys { get; set; }
+        List<string> keysList { get; set; }
+
+        string filePath;
 
         public TranslationManager()
         {
             localizations = new Dictionary<int, LocalizedTexts>();
 
-            Languages = new List<string>();
+            languagesList = new List<string>();
 
-            Keys = new List<string>();
+            keysList = new List<string>();
         }
 
         public string GetReferenceText()
@@ -45,14 +51,20 @@ namespace godotlocalizationeditor
             return localizations[targetTextIndex].Texts[selectedKey];
         }
 
+
+        public void UpdateTargetLanguage(string newText)
+        {
+            localizations[targetTextIndex].Texts[selectedKey] = newText;
+        }
+
         public string GetReferenceLanguage()
         {
-            return Languages[referenceTextIndex];
+            return languagesList[referenceTextIndex];
         }
 
         public string GetTargetLanguage()
         {
-            return Languages[targetTextIndex];
+            return languagesList[targetTextIndex];
         }
 
         public string GetCurrentKey()
@@ -62,12 +74,12 @@ namespace godotlocalizationeditor
 
         public List<string> GetAllKeys()
         {
-            return Keys;
+            return keysList;
         }
 
         public List<string> GetAllLanguages()
         {
-            return Languages;
+            return languagesList;
         }
 
         public void SelectReferenceLanguage(int newIndex)
@@ -84,30 +96,42 @@ namespace godotlocalizationeditor
         {
             var auth = $"Authorization: DeepL-Auth-Key {apiKey}";
 
-            var contentTpye = "Content-Type: application/x-www-form-urlencoded";
+            var contentTpye = "Content-Type: application/json";
+
+            var message = new ApiMessage() { text = "Hello!", source_lang = "HU", target_lang = "RU" };
+
+            var jsonMessage = JsonConvert.SerializeObject(message);
 
             var url = mock ? "http://localhost:3000/v2/translate" : "https://api-free.deepl.com/v2/translate";
 
-            hTTPRequest.Request(url, new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, "text=Hello%2C%20world!&target_lang=DE");
+            hTTPRequest.Request(url, new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, jsonMessage);
         }
 
-        public void HandleAPIResponse(int result, int response_code, String[] headers, byte[] body)
+        public string HandleAPIResponse(int result, int response_code, String[] headers, byte[] body)
         {
-            JSONParseResult json = JSON.Parse(Encoding.UTF8.GetString(body));
+            string jsonStr = Encoding.UTF8.GetString(body);
 
             if (response_code == 200)
             {
-                DebugHelper.PrettyPrintVerbose(json.Result);
+                DebugHelper.PrettyPrintVerbose(jsonStr);
 
-                return;
+                var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(jsonStr);
+
+                DebugHelper.PrettyPrintVerbose(apiResponse.translations.First()?.text);
+
+                return apiResponse.translations.First()?.text;
             }
 
             DebugHelper.PrettyPrintVerbose($"Http response code: {response_code}");
+
+            return string.Empty;
         }
 
         public void LoadData(String path)
         {
             DebugHelper.PrettyPrintVerbose($"Selected file: {path}", ConsoleColor.Green);
+
+            filePath = path;
 
             var file = new File();
 
@@ -119,13 +143,13 @@ namespace godotlocalizationeditor
 
             file.Close();
 
-            var languages = lines.First().Split(";");
+            var firstLine = lines.First().Split(";");
 
-            for (int i = 1; i < languages.Length; i++)
+            for (int i = 1; i < firstLine.Length; i++)
             {
-                Languages.Add(languages[i]);
+                languagesList.Add(firstLine[i]);
 
-                localizations.Add(i-1, new LocalizedTexts() { Index = i-1, Locale = languages[i], Texts = new Dictionary<string, string>() });
+                localizations.Add(i - 1, new LocalizedTexts() { Index = i - 1, Locale = firstLine[i], Texts = new Dictionary<string, string>() });
             }
 
             for (int i = 1; i < lines.Count; i++)
@@ -138,24 +162,25 @@ namespace godotlocalizationeditor
 
         private void ProcessLine(string[] line)
         {
-            Keys.Add(line.First());
+            var key = line.First();
+
+            keysList.Add(key);
 
             for (int c = 1; c < line.Length; c++)
             {
-                if (localizations[c-1] == null) continue;
+                if (localizations[c - 1] == null) continue;
 
-                if (!localizations[c-1].Texts.Any(t => t.Key == line.First()))
+                if (!localizations[c - 1].Texts.Any(t => t.Key == key))
                 {
-                    localizations[c-1].Texts.Add(line.First(), line[c]);
+                    localizations[c - 1].Texts.Add(key, line[c]);
                 }
             }
         }
 
         public void SelectKeyByIndex(int index)
         {
-            selectedKey = Keys[index];
+            selectedKey = keysList[index];
         }
-
 
     }
 }

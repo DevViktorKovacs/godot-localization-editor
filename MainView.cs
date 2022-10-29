@@ -34,6 +34,8 @@ public class MainView : Node2D
 
 	CheckBox MockCheckBox;
 
+	LineEdit LineEdit;
+
 	HTTPRequest hTTPRequest;
 
 	static string fontPath = "res://fonts/Chinese.tres";
@@ -75,6 +77,8 @@ public class MainView : Node2D
 		ReferenceTextLabel = (Label)this.GetChildByName(nameof(ReferenceTextLabel));
 
 		MockCheckBox = this.GetChild<CheckBox>();
+
+		LineEdit = this.GetChild<LineEdit>();
 
 		MockCheckBox.Pressed = true;
 
@@ -129,6 +133,8 @@ public class MainView : Node2D
 
 		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
 
+		LineEdit.Text = path;
+
 		TargetLanguage.DisableTooltips();
 
 		ReferenceLanguage.DisableTooltips();
@@ -162,7 +168,7 @@ public class MainView : Node2D
 
 	private void _on_HTTPRequest_request_completed(int result, int response_code, String[] headers, byte[] body)
 	{
-		translationManager.HandleAPIResponse(result, response_code, headers, body);
+		TargetTextEdit.Text = translationManager.HandleAPIResponse(result, response_code, headers, body);
 	}
 	
 	
@@ -170,7 +176,31 @@ public class MainView : Node2D
 	{
 		translationManager.CallAPI(hTTPRequest, APIkey.Text, MockCheckBox.Pressed);
 	}
+	
+	
+	private void _on_Button3_button_up()
+	{
+		// Save
+	}
+
+
+
+	private void _on_Button4_button_up()
+	{
+		// Save as
+	}
+
+
+	private void _on_TargetTextEdit_text_changed()
+	{
+		translationManager.UpdateTargetLanguage(TargetTextEdit.Text);
+	}
+
 }
+
+
+
+
 
 
 

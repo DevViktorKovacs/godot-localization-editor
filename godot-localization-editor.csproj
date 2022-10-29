@@ -3,4 +3,10 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>godotlocalizationeditor</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
 </Project>
