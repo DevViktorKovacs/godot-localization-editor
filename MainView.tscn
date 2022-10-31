@@ -48,7 +48,16 @@ margin_top = 81.0
 margin_right = 170.0
 margin_bottom = 281.0
 
-[node name="FileDialog" type="FileDialog" parent="."]
+[node name="DDOpen" type="FileDialog" parent="."]
+margin_left = 100.0
+margin_top = 100.0
+margin_right = 800.0
+margin_bottom = 500.0
+access = 2
+current_dir = "/Users/Viktor/Documents/GitHub/godot-localization-editor"
+current_path = "/Users/Viktor/Documents/GitHub/godot-localization-editor/"
+
+[node name="FDSaveAs" type="FileDialog" parent="."]
 margin_left = 100.0
 margin_top = 100.0
 margin_right = 800.0
@@ -220,7 +229,8 @@ text = "Next"
 [connection signal="item_selected" from="ReferenceLanguage" to="." method="_on_ReferenceLanguage_item_selected"]
 [connection signal="item_selected" from="Keys" to="." method="_on_Keys_item_selected"]
 [connection signal="item_selected" from="TargetLanguage" to="." method="_on_TargetLanguage_item_selected"]
-[connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]
+[connection signal="file_selected" from="DDOpen" to="." method="_on_FileDialog_file_selected"]
+[connection signal="file_selected" from="FDSaveAs" to="." method="_on_FDSaveAs_file_selected"]
 [connection signal="text_changed" from="TargetTextEdit" to="." method="_on_TargetTextEdit_text_changed"]
 [connection signal="button_up" from="Button2" to="." method="_on_Button2_button_up"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]

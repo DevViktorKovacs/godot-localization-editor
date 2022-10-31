@@ -37,6 +37,12 @@ namespace godotlocalizationeditor
 
         void LoadData(String path);
 
+        void SaveData();
+
+        void SaveData(String path);
+
         List<string> GetKeysBySearchTerm(string searchTerm);
+
+        List<string> GetAllLines();
     }
 }

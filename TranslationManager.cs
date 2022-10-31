@@ -9,9 +9,12 @@ using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Web;
+using System.IO;
+using File = Godot.File;
 
 namespace godotlocalizationeditor
 {
+
     public class TranslationManager : ITranslationManager
     {
         Dictionary<int, LocalizedTexts> localizations { get; set; }
@@ -46,10 +49,15 @@ namespace godotlocalizationeditor
 
         public List<string> GetKeysBySearchTerm(string searchTerm)
         {
-            return localizations[referenceTextIndex].Texts
+            var matchInRef = localizations[referenceTextIndex].Texts
+                .Where(t => t.Value.ToLower().Contains(searchTerm.ToLower()) || t.Key.ToLower().Contains(searchTerm.ToLower()))
+                .Select(t => t.Key);
+
+            var matchInTarget = localizations[targetTextIndex].Texts
                 .Where(t => t.Value.ToLower().Contains(searchTerm.ToLower()))
-                .Select(t => t.Key)
-                .ToList();
+                .Select(t => t.Key);
+
+            return matchInRef.Concat(matchInTarget).ToList();           
         }
 
         public string GetTargetText()
@@ -192,5 +200,62 @@ namespace godotlocalizationeditor
             selectedKey = keysList[index];
         }
 
+        public List<string> GetAllLines()
+        {
+            var result = new List<string>();
+
+            var firstLine = "ID";
+
+            localizations.ToList().ForEach(l => { firstLine = firstLine + $";{l.Value.Locale}"; });
+
+            result.Add(firstLine);
+
+            for (int i = 0; i < keysList.Count(); i++)
+            {
+                var newLine = keysList[i];
+
+                if (newLine == String.Empty) continue;
+
+                for (int j = 0; j < languagesList.Count; j++)
+                {
+                    newLine = $"{newLine};{localizations[j].Texts[keysList[i]]}";
+                }
+
+                result.Add(newLine);
+            
+            }
+
+            return result;
+        }
+
+        public void SaveData()
+        {
+            StoreLinesToFile(filePath);
+        }
+
+        public void SaveData(string path)
+        {
+            StoreLinesToFile(path);
+        }
+
+        private void StoreLinesToFile(string path)
+        {
+            var lines = GetAllLines();
+
+            var file = new File();
+
+            file.Open(path, File.ModeFlags.Write);
+
+            for (int i = 0; i < lines.Count(); i++)
+            {
+                file.StoreLine(lines[i]);
+            }
+
+            file.Close();
+
+            DebugHelper.PrettyPrintVerbose($"Saved csv to: {path}");
+        }
+
+ 
     }
 }

@@ -32,7 +32,9 @@ public class MainView : Node2D
 
 	TextEditor TextEditor;
 
-	FileDialog FileDialog;
+	FileDialog DDOpen;
+
+	FileDialog FDSaveAs;
 
 	CheckBox MockCheckBox;
 
@@ -50,8 +52,6 @@ public class MainView : Node2D
 	{
 		translationManager = new TranslationManager();
 
-		FileDialog = this.GetChild<FileDialog>();
-
 		TextEditor = this.GetChild<TextEditor>();
 
 		TextEditor.TextChanged += TextEditor_TextChanged;
@@ -61,6 +61,10 @@ public class MainView : Node2D
 		TextEditor.SetFont(fontPath);
 
 		APIkey = (TextEdit)this.GetChildByName(nameof(APIkey));
+
+		DDOpen = (FileDialog)this.GetChildByName(nameof(DDOpen));
+
+		FDSaveAs = (FileDialog)this.GetChildByName(nameof(FDSaveAs));
 
 		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
@@ -96,7 +100,7 @@ public class MainView : Node2D
 
 		ReferenceTextLabel.Visible = false;
 
-		FileDialog.Filters = new string[] { "*.csv" };
+		DDOpen.Filters = new string[] { "*.csv" };
 
 		foundKeys = new List<string>();
 
@@ -129,9 +133,9 @@ public class MainView : Node2D
 
 	private void _on_Button_button_up()
 	{
-		if (!FileDialog.Visible)
+		if (!DDOpen.Visible)
 		{
-			FileDialog.Popup_();
+			DDOpen.Popup_();
 		}
 	}
 	
@@ -168,7 +172,6 @@ public class MainView : Node2D
 		ReferenceLanguage.DisableTooltips();
 
 		Keys.DisableTooltips();
-
 	}
 	
 		
@@ -208,14 +211,19 @@ public class MainView : Node2D
 	
 	private void _on_Button3_button_up()
 	{
-		// Save
+		translationManager.SaveData();
 	}
 
 
 
 	private void _on_Button4_button_up()
 	{
-		// Save as
+		FDSaveAs.Popup_();
+	}
+	
+	private void _on_FDSaveAs_file_selected(String path)
+	{
+		translationManager.SaveData(path);
 	}
 
 
@@ -240,6 +248,9 @@ public class MainView : Node2D
 	}
 
 }
+
+
+
 
 
 
