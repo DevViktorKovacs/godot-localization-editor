@@ -36,5 +36,7 @@ namespace godotlocalizationeditor
         string HandleAPIResponse(int result, int response_code, String[] headers, byte[] body);
 
         void LoadData(String path);
+
+        List<string> GetKeysBySearchTerm(string searchTerm);
     }
 }

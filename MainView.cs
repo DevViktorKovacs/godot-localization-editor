@@ -16,6 +16,8 @@ public class MainView : Node2D
 
 	Label ReferenceTextLabel;
 
+	Label FoundLabel;
+
 	ItemList TargetLanguage;
 
 	ItemList ReferenceLanguage;
@@ -37,6 +39,10 @@ public class MainView : Node2D
 	LineEdit LineEdit;
 
 	HTTPRequest hTTPRequest;
+
+	List<string> foundKeys;
+
+	int foundKeysIndex;
 
 	static string fontPath = "res://fonts/Chinese.tres";
 
@@ -76,6 +82,8 @@ public class MainView : Node2D
 
 		ReferenceTextLabel = (Label)this.GetChildByName(nameof(ReferenceTextLabel));
 
+		FoundLabel = (Label)this.GetChildByName(nameof(FoundLabel));
+
 		MockCheckBox = this.GetChild<CheckBox>();
 
 		LineEdit = this.GetChild<LineEdit>();
@@ -90,6 +98,8 @@ public class MainView : Node2D
 
 		FileDialog.Filters = new string[] { "*.csv" };
 
+		foundKeys = new List<string>();
+
 		hTTPRequest = this.GetChild<HTTPRequest>();
 	}
 
@@ -97,6 +107,24 @@ public class MainView : Node2D
 	{
 		DebugHelper.PrettyPrintVerbose($"Searched text: {e.NewText}", ConsoleColor.Green);
 
+		var results = translationManager.GetKeysBySearchTerm(e.NewText);
+
+		var count = results.Count();
+
+		FoundLabel.Text = count.ToString();
+
+		foundKeys = results;
+
+		foundKeysIndex = 0;
+
+		if (count > 0)
+		{
+			var indexOfFirstKey = translationManager.GetAllKeys().IndexOf(foundKeys[foundKeysIndex]);
+
+			Keys.Select(indexOfFirstKey);
+
+			_on_Keys_item_selected(indexOfFirstKey);
+		}
 	}
 
 	private void _on_Button_button_up()
@@ -195,8 +223,25 @@ public class MainView : Node2D
 	{
 		translationManager.UpdateTargetLanguage(TargetTextEdit.Text);
 	}
+	
+	
+	private void _on_Button5_button_up()
+	{
+		if (foundKeys.Count == 0) return;
+
+		foundKeysIndex = (foundKeysIndex + 1) % foundKeys.Count();
+
+		var indexOfKey = translationManager.GetAllKeys().IndexOf(foundKeys[foundKeysIndex]);
+
+		Keys.Select(indexOfKey);
+
+		_on_Keys_item_selected(indexOfKey);
+
+	}
 
 }
+
+
 
 
 

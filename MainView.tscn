@@ -193,6 +193,27 @@ margin_right = 1011.0
 margin_bottom = 43.0
 editable = false
 
+[node name="Label9" type="Label" parent="."]
+margin_left = 744.0
+margin_top = 350.0
+margin_right = 784.0
+margin_bottom = 364.0
+text = "Found:"
+
+[node name="FoundLabel" type="Label" parent="."]
+margin_left = 788.0
+margin_top = 350.0
+margin_right = 831.0
+margin_bottom = 364.0
+text = "0"
+
+[node name="Button5" type="Button" parent="."]
+margin_left = 681.0
+margin_top = 346.0
+margin_right = 723.0
+margin_bottom = 366.0
+text = "Next"
+
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
 [connection signal="button_up" from="Button3" to="." method="_on_Button3_button_up"]
 [connection signal="button_up" from="Button4" to="." method="_on_Button4_button_up"]
@@ -203,3 +224,4 @@ editable = false
 [connection signal="text_changed" from="TargetTextEdit" to="." method="_on_TargetTextEdit_text_changed"]
 [connection signal="button_up" from="Button2" to="." method="_on_Button2_button_up"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
+[connection signal="button_up" from="Button5" to="." method="_on_Button5_button_up"]

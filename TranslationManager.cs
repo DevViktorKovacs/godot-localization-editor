@@ -44,6 +44,14 @@ namespace godotlocalizationeditor
             return localizations[referenceTextIndex].Texts[selectedKey];
         }
 
+        public List<string> GetKeysBySearchTerm(string searchTerm)
+        {
+            return localizations[referenceTextIndex].Texts
+                .Where(t => t.Value.ToLower().Contains(searchTerm.ToLower()))
+                .Select(t => t.Key)
+                .ToList();
+        }
+
         public string GetTargetText()
         {
             if (selectedKey == null) return string.Empty;
@@ -54,6 +62,8 @@ namespace godotlocalizationeditor
 
         public void UpdateTargetLanguage(string newText)
         {
+            if (selectedKey == null) return;
+
             localizations[targetTextIndex].Texts[selectedKey] = newText;
         }
 
