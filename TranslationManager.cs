@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using System.Web;
 using System.IO;
 using File = Godot.File;
+using System.Web.UI.WebControls;
+using System.Reflection;
 
 namespace godotlocalizationeditor
 {
@@ -145,21 +147,38 @@ namespace godotlocalizationeditor
             return string.Empty;
         }
 
+
+        public void MergeFiles(string path)
+        {
+            var lines = ReadLinesFromFile(path);
+
+            var firstLine = lines.First().Split(";");
+
+            var sisterLanguagesList = new List<string>();
+
+            var sisterLocalizations = new Dictionary<int, LocalizedTexts>();
+
+            var sisterKeys = new List<string>();
+
+            for (int i = 1; i < firstLine.Length; i++)
+            {
+                sisterLanguagesList.Add(firstLine[i]);
+
+                sisterLocalizations.Add(i - 1, new LocalizedTexts() { Index = i - 1, Locale = firstLine[i], Texts = new Dictionary<string, string>() });
+            }
+
+            ProcessFileData(lines, sisterLocalizations, sisterKeys);
+
+            for (int i = 0; i < sisterKeys.Count; i++)
+            {
+                //TODO Merging logic : (check if locale of LocalizedText are matching), then merge
+            
+            }
+        }
+
         public void LoadData(String path)
         {
-            DebugHelper.PrettyPrintVerbose($"Selected file: {path}", ConsoleColor.Green);
-
-            filePath = path;
-
-            var file = new File();
-
-            if (!file.FileExists(path)) return;
-
-            file.Open(path, File.ModeFlags.Read);
-
-            var lines = file.GetLines();
-
-            file.Close();
+            var lines = ReadLinesFromFile(path);
 
             var firstLine = lines.First().Split(";");
 
@@ -170,27 +189,51 @@ namespace godotlocalizationeditor
                 localizations.Add(i - 1, new LocalizedTexts() { Index = i - 1, Locale = firstLine[i], Texts = new Dictionary<string, string>() });
             }
 
+            ProcessFileData(lines, localizations, keysList);
+        }
+
+        private List<string> ReadLinesFromFile(String path)
+        {
+            DebugHelper.PrettyPrintVerbose($"Selected file: {path}", ConsoleColor.Green);
+
+            filePath = path;
+
+            var file = new File();
+
+            if (!file.FileExists(path)) return new List<string>();
+
+            file.Open(path, File.ModeFlags.Read);
+
+            var lines = file.GetLines();
+
+            file.Close();
+
+            return lines;
+        }
+
+        private void ProcessFileData(List<string> lines, Dictionary<int, LocalizedTexts> localizationDictionary, List<string> loaclizationKeys)
+        {
             for (int i = 1; i < lines.Count; i++)
             {
                 var line = lines[i].Split(";");
 
-                ProcessLine(line);
+                ProcessLine(line, localizations, keysList);
             }
         }
 
-        private void ProcessLine(string[] line)
+        private void ProcessLine(string[] line, Dictionary<int, LocalizedTexts> localizationDictionary, List<string> loaclizationKeys)
         {
             var key = line.First();
 
-            keysList.Add(key);
+            loaclizationKeys.Add(key);
 
             for (int c = 1; c < line.Length; c++)
             {
-                if (localizations[c - 1] == null) continue;
+                if (localizationDictionary[c - 1] == null) continue;
 
-                if (!localizations[c - 1].Texts.Any(t => t.Key == key))
+                if (!localizationDictionary[c - 1].Texts.Any(t => t.Key == key))
                 {
-                    localizations[c - 1].Texts.Add(key, line[c]);
+                    localizationDictionary[c - 1].Texts.Add(key, line[c]);
                 }
             }
         }
@@ -256,6 +299,35 @@ namespace godotlocalizationeditor
             DebugHelper.PrettyPrintVerbose($"Saved csv to: {path}");
         }
 
- 
+        public void AddLanguage(string locale)
+        {
+            if (locale == null || languagesList.Any(l => l == locale)) return;
+
+            var index = languagesList.Count();
+
+            languagesList.Add(locale);
+
+            localizations.Add(index, new LocalizedTexts() { Index = index, Locale = locale, Texts = new Dictionary<string, string>() });
+
+            for (int i = 0; i < keysList.Count; i++)
+            {
+                localizations[index].Texts.Add(keysList[i], "MT");
+            }
+        }
+
+        public void AddNewKey(string key)
+        {
+            if (key == null || keysList.Any(l => l == key)) return;
+
+            keysList.Add(key);
+
+            for (int i = 0; i < languagesList.Count; i++)
+            {
+                localizations[i].Texts.Add(key, "MT");
+            }
+
+
+        }
+
     }
 }

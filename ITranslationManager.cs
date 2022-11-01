@@ -41,8 +41,14 @@ namespace godotlocalizationeditor
 
         void SaveData(String path);
 
+        void MergeFiles(String path);
+
         List<string> GetKeysBySearchTerm(string searchTerm);
 
         List<string> GetAllLines();
+
+        void AddLanguage(string locale);
+
+        void AddNewKey(string key);
     }
 }

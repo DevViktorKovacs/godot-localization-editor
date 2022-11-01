@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using godotlocalizationeditor;
 using System;
 using System.Linq;
-using System.Text;
-using System.Net;
 
 public class MainView : Node2D
 {
@@ -36,9 +34,13 @@ public class MainView : Node2D
 
 	FileDialog FDSaveAs;
 
+	FileDialog FDMerge;
+
 	CheckBox MockCheckBox;
 
-	LineEdit LineEdit;
+	LineEdit LEFilePath;
+
+	LineEdit LEAddKey;
 
 	HTTPRequest hTTPRequest;
 
@@ -66,6 +68,8 @@ public class MainView : Node2D
 
 		FDSaveAs = (FileDialog)this.GetChildByName(nameof(FDSaveAs));
 
+		FDMerge = (FileDialog)this.GetChildByName(nameof(FDMerge));
+
 		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
 		ReferenceTextEdit.SetLangugeSpecificTheme(fontPath);
@@ -90,7 +94,9 @@ public class MainView : Node2D
 
 		MockCheckBox = this.GetChild<CheckBox>();
 
-		LineEdit = this.GetChild<LineEdit>();
+		LEFilePath = (LineEdit)this.GetChildByName(nameof(LEFilePath));
+
+		LEAddKey = (LineEdit)this.GetChildByName(nameof(LEAddKey));
 
 		MockCheckBox.Pressed = true;
 
@@ -165,7 +171,7 @@ public class MainView : Node2D
 
 		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
 
-		LineEdit.Text = path;
+		LEFilePath.Text = path;
 
 		TargetLanguage.DisableTooltips();
 
@@ -246,28 +252,39 @@ public class MainView : Node2D
 		_on_Keys_item_selected(indexOfKey);
 
 	}
+	
+	private void _on_Button6_button_up()
+	{
+		translationManager.AddLanguage(LEAddKey.Text);
+
+		TargetLanguage.Clear();
+
+		ReferenceLanguage.Clear();
+
+		translationManager.GetAllLanguages().ForEach(l => { TargetLanguage.AddItem(l); ReferenceLanguage.AddItem(l); });
+	}
+
+	private void _on_Button7_button_up()
+	{
+		translationManager.AddNewKey(LEAddKey.Text);
+
+		Keys.Clear();
+
+		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
+	}
+	
+	private void _on_Button8_button_up()
+	{
+		FDMerge.Popup_();
+	}
+	
+	
+	private void _on_FDMerge_file_selected(String path)
+	{
+		translationManager.MergeFiles(path);
+	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
