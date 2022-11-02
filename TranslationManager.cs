@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using File = Godot.File;
+using System.Net.Http;
 
 namespace godotlocalizationeditor
 {
@@ -109,7 +110,7 @@ namespace godotlocalizationeditor
         {
             var auth = $"Authorization: DeepL-Auth-Key {trParams.APIKey}";
 
-            var contentTpye = "Content-Type: application/json";
+            var contentTpye = "Content-Type: application/x-www-form-urlencoded";
 
             var targetLang = languagesList[targetTextIndex].Substr(0, 2).ToUpper();
 
@@ -119,7 +120,7 @@ namespace godotlocalizationeditor
 
             var message = new ApiMessage() { text = textToTranslate, source_lang = sourceLang, target_lang = targetLang };
 
-            var jsonMessage = JsonConvert.SerializeObject(message);
+            var contentAsString = LargeFormUrlEncodedContent.GetContentAsString(message.GetKeyValuePairs());
 
             var url = trParams.Mock ? "http://localhost:3000/v2/translate" : "https://api-free.deepl.com/v2/translate";
 
@@ -128,8 +129,10 @@ namespace godotlocalizationeditor
             DebugHelper.PrettyPrintVerbose($"-- source language:{sourceLang}");
             DebugHelper.PrettyPrintVerbose($"-- target language:{targetLang}");
             DebugHelper.PrettyPrintVerbose($"-- text:{trParams.Text}");
+            DebugHelper.PrettyPrintVerbose($"-- API key:{trParams.APIKey}");
+            DebugHelper.PrettyPrintVerbose($"-- content:{contentAsString}");
 
-            hTTPRequest.Request(url, new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, jsonMessage);
+            hTTPRequest.Request(url, new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, contentAsString);
         }
 
         public string HandleAPIResponse(int result, int response_code, String[] headers, byte[] body)
