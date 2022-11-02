@@ -168,7 +168,7 @@ margin_left = 681.0
 margin_top = 465.0
 margin_right = 827.0
 margin_bottom = 485.0
-hint_tooltip = "Translates the reference text by using the DeepL API."
+hint_tooltip = "Translates the reference text by using the DeepL API. (F3)"
 text = "Tranlsate with DeepL"
 
 [node name="APIkey" type="TextEdit" parent="."]

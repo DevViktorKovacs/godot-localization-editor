@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using godotlocalizationeditor;
 using System;
 using System.Linq;
+using System.Text;
 
 public class MainView : Node2D
 {
@@ -115,6 +116,29 @@ public class MainView : Node2D
 		foundKeys = new List<string>();
 
 		hTTPRequest = this.GetChild<HTTPRequest>();
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		base._Input(@event);
+
+		if (@event is InputEventKey)
+		{
+			HandleInputKeyEvent((InputEventKey)@event);
+		}
+	}
+
+	private void HandleInputKeyEvent(InputEventKey @event)
+	{
+		if (@event.IsPressed())
+		{
+			var input = OS.GetScancodeString(@event.Scancode);
+
+			if (input == "F3")
+			{
+				CallAPI();
+			}
+		}
 	}
 
 	private void TextEditor_TextChanged(object sender, TextChangedEventArgs e)
@@ -248,10 +272,22 @@ public class MainView : Node2D
 	private void _on_HTTPRequest_request_completed(int result, int response_code, String[] headers, byte[] body)
 	{
 		TargetTextEdit.Text = translationManager.HandleAPIResponse(result, response_code, headers, body);
+
+		translationManager.UpdateTargetLanguage(TargetTextEdit.Text);
 	}
-	
-	
+
+	private void _on_TargetTextEdit_text_changed()
+	{
+		translationManager.UpdateTargetLanguage(TargetTextEdit.Text);
+	}
+
+
 	private void _on_Button2_button_up()
+	{
+		CallAPI();
+	}
+
+	private void CallAPI()
 	{
 		var trParams = new TranslationRequestParams()
 		{
@@ -269,14 +305,7 @@ public class MainView : Node2D
 	private void _on_Button3_button_up()
 	{
 		translationManager.SaveData();
-	}
-
-
-	private void _on_TargetTextEdit_text_changed()
-	{
-		translationManager.UpdateTargetLanguage(TargetTextEdit.Text);
-	}
-	
+	}	
 	
 	private void _on_Button5_button_up()
 	{
