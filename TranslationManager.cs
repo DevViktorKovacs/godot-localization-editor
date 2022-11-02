@@ -29,16 +29,29 @@ namespace godotlocalizationeditor
 
         public TranslationManager()
         {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             localizations = new Dictionary<int, LocalizedTexts>();
 
             languagesList = new List<string>();
 
             keysList = new List<string>();
+
+            selectedKey = null;
+
+            targetTextIndex = 0;
+
+            referenceTextIndex = 0;
         }
 
         public string GetReferenceText()
         {
             if (selectedKey == null) return string.Empty;
+
+            if (selectedKey == string.Empty) return string.Empty;
 
             return localizations[referenceTextIndex].Texts[selectedKey];
         }
@@ -59,6 +72,8 @@ namespace godotlocalizationeditor
         public string GetTargetText()
         {
             if (selectedKey == null) return string.Empty;
+
+            if (selectedKey == string.Empty) return string.Empty;
 
             return localizations[targetTextIndex].Texts[selectedKey];
         }
@@ -211,6 +226,8 @@ namespace godotlocalizationeditor
 
         public void LoadData(String path)
         {
+            Initialize();
+
             var lines = ReadLinesFromFile(path);
 
             var firstLine = lines.First().Split(";");
@@ -380,6 +397,11 @@ namespace godotlocalizationeditor
             var languagesToSave = new List<string>() { localizations[referenceTextIndex].Locale, localizations[targetTextIndex].Locale };
 
             StoreLinesToFile(path, partialLocalizations, languagesToSave);
+        }
+
+        public void Copy()
+        {
+            localizations[targetTextIndex].Texts[selectedKey] = localizations[referenceTextIndex].Texts[selectedKey];
         }
     }
 }

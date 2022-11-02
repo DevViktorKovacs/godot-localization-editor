@@ -288,6 +288,14 @@ margin_bottom = 232.0
 hint_tooltip = "Export only the reference and target languages.."
 text = "Export partial"
 
+[node name="Button10" type="Button" parent="."]
+margin_left = 681.0
+margin_top = 400.0
+margin_right = 693.0
+margin_bottom = 420.0
+hint_tooltip = "Copy the content of the reference text to the target field. (F4)"
+text = "Copy-Paste"
+
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
 [connection signal="button_up" from="Button3" to="." method="_on_Button3_button_up"]
 [connection signal="button_up" from="Button4" to="." method="_on_Button4_button_up"]
@@ -306,3 +314,4 @@ text = "Export partial"
 [connection signal="button_up" from="Button7" to="." method="_on_Button7_button_up"]
 [connection signal="button_up" from="Button8" to="." method="_on_Button8_button_up"]
 [connection signal="button_up" from="Button9" to="." method="_on_Button9_button_up"]
+[connection signal="button_up" from="Button10" to="." method="_on_Button10_button_up"]

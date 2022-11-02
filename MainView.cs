@@ -138,6 +138,13 @@ public class MainView : Node2D
 			{
 				CallAPI();
 			}
+
+			if (input == "F4")
+			{
+				translationManager.Copy();
+
+				UpateTextFields();
+			}
 		}
 	}
 
@@ -188,6 +195,12 @@ public class MainView : Node2D
 	
 	private void _on_FileDialog_file_selected(String path)
 	{
+		TargetLanguage.Clear();
+
+		ReferenceLanguage.Clear();
+
+		Keys.Clear();
+
 		translationManager.LoadData(path);
 
 		translationManager.GetAllLanguages().ForEach(l => { TargetLanguage.AddItem(l); ReferenceLanguage.AddItem(l); });
@@ -340,8 +353,18 @@ public class MainView : Node2D
 
 		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
 	}
+	
+	
+	private void _on_Button10_button_up()
+	{
+		translationManager.Copy();
+
+		UpateTextFields();
+	}
 
 }
+
+
 
 
 
