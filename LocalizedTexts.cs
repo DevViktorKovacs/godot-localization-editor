@@ -8,7 +8,6 @@ namespace godotlocalizationeditor
 {
     public  class LocalizedTexts
     {
-        public int Index { get; set; }
         public string Locale { get; set; }
 
         public Dictionary<string,string> Texts { get; set; }

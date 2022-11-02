@@ -164,16 +164,41 @@ namespace godotlocalizationeditor
             {
                 sisterLanguagesList.Add(firstLine[i]);
 
-                sisterLocalizations.Add(i - 1, new LocalizedTexts() { Index = i - 1, Locale = firstLine[i], Texts = new Dictionary<string, string>() });
+                sisterLocalizations.Add(i - 1, new LocalizedTexts() { Locale = firstLine[i], Texts = new Dictionary<string, string>() });
             }
 
             ProcessFileData(lines, sisterLocalizations, sisterKeys);
 
-            for (int i = 0; i < sisterKeys.Count; i++)
+
+            for (int j = 0; j < sisterLanguagesList.Count; j++)
             {
-                //TODO Merging logic : (check if locale of LocalizedText are matching), then merge
-            
+                var currentSisterLocalizedText = sisterLocalizations[j];
+
+                var currentLocalizedText = localizations.Where(l => l.Value.Locale == sisterLanguagesList[j]).FirstOrDefault().Value;
+
+                if (currentLocalizedText == default)
+                {
+                    AddLanguage(sisterLanguagesList[j]);
+
+                    currentLocalizedText = localizations.Where(l => l.Value.Locale == sisterLanguagesList[j]).FirstOrDefault().Value;
+                }
+
+                for (int i = 0; i < sisterKeys.Count; i++)
+                {
+                    var currentSisterKey = sisterKeys[i];
+
+                    if (!currentLocalizedText.Texts.TryGetValue(currentSisterKey, out _))
+                    {
+                        AddNewKey(currentSisterKey);
+                    }
+
+                    if (currentLocalizedText.Texts[currentSisterKey] == "MT" && currentSisterLocalizedText.Texts[currentSisterKey] != "MT")
+                    {
+                        currentLocalizedText.Texts[currentSisterKey] = currentSisterLocalizedText.Texts[currentSisterKey];
+                    }
+                }
             }
+
         }
 
         public void LoadData(String path)
@@ -186,7 +211,7 @@ namespace godotlocalizationeditor
             {
                 languagesList.Add(firstLine[i]);
 
-                localizations.Add(i - 1, new LocalizedTexts() { Index = i - 1, Locale = firstLine[i], Texts = new Dictionary<string, string>() });
+                localizations.Add(i - 1, new LocalizedTexts() { Locale = firstLine[i], Texts = new Dictionary<string, string>() });
             }
 
             ProcessFileData(lines, localizations, keysList);
@@ -243,13 +268,13 @@ namespace godotlocalizationeditor
             selectedKey = keysList[index];
         }
 
-        public List<string> GetAllLines()
+        public List<string> GetAllLines(Dictionary<int, LocalizedTexts> localizationDictionary, List<string> languagesToSave)
         {
             var result = new List<string>();
 
             var firstLine = "ID";
 
-            localizations.ToList().ForEach(l => { firstLine = firstLine + $";{l.Value.Locale}"; });
+            localizationDictionary.ToList().ForEach(l => { firstLine = firstLine + $";{l.Value.Locale}"; });
 
             result.Add(firstLine);
 
@@ -259,9 +284,9 @@ namespace godotlocalizationeditor
 
                 if (newLine == String.Empty) continue;
 
-                for (int j = 0; j < languagesList.Count; j++)
+                for (int j = 0; j < languagesToSave.Count; j++)
                 {
-                    newLine = $"{newLine};{localizations[j].Texts[keysList[i]]}";
+                    newLine = $"{newLine};{localizationDictionary[j].Texts[keysList[i]]}";
                 }
 
                 result.Add(newLine);
@@ -283,7 +308,12 @@ namespace godotlocalizationeditor
 
         private void StoreLinesToFile(string path)
         {
-            var lines = GetAllLines();
+            StoreLinesToFile(path, localizations, languagesList);
+        }
+
+        private void StoreLinesToFile(string path, Dictionary<int, LocalizedTexts> localizationDictionary, List<string> languagesToSave)
+        {
+            var lines = GetAllLines(localizationDictionary, languagesToSave);
 
             var file = new File();
 
@@ -296,7 +326,11 @@ namespace godotlocalizationeditor
 
             file.Close();
 
-            DebugHelper.PrettyPrintVerbose($"Saved csv to: {path}");
+            var languagesString = "";
+
+            languagesToSave.ForEach(l => { languagesString = $"{languagesString} {l},"; });
+
+            DebugHelper.PrettyPrintVerbose($"Saved csv to: {path} - Languages: {languagesString}");
         }
 
         public void AddLanguage(string locale)
@@ -307,7 +341,7 @@ namespace godotlocalizationeditor
 
             languagesList.Add(locale);
 
-            localizations.Add(index, new LocalizedTexts() { Index = index, Locale = locale, Texts = new Dictionary<string, string>() });
+            localizations.Add(index, new LocalizedTexts() {Locale = locale, Texts = new Dictionary<string, string>() });
 
             for (int i = 0; i < keysList.Count; i++)
             {
@@ -325,9 +359,19 @@ namespace godotlocalizationeditor
             {
                 localizations[i].Texts.Add(key, "MT");
             }
-
-
         }
 
+        public void ExportPartial(string path)
+        {
+            var partialLocalizations = new Dictionary<int, LocalizedTexts>()
+            {
+                { 0, localizations[referenceTextIndex] },
+                { 1, localizations[targetTextIndex]}
+            };
+
+            var languagesToSave = new List<string>() { localizations[referenceTextIndex].Locale, localizations[targetTextIndex].Locale };
+
+            StoreLinesToFile(path, partialLocalizations, languagesToSave);
+        }
     }
 }

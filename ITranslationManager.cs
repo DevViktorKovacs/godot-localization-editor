@@ -43,9 +43,11 @@ namespace godotlocalizationeditor
 
         void MergeFiles(String path);
 
+        void ExportPartial(String path);
+
         List<string> GetKeysBySearchTerm(string searchTerm);
 
-        List<string> GetAllLines();
+        List<string> GetAllLines(Dictionary<int, LocalizedTexts> localizationDictionary, List<string> languagesToSave);
 
         void AddLanguage(string locale);
 

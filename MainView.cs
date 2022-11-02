@@ -36,6 +36,8 @@ public class MainView : Node2D
 
 	FileDialog FDMerge;
 
+	FileDialog FDExport;
+
 	CheckBox MockCheckBox;
 
 	LineEdit LEFilePath;
@@ -54,14 +56,6 @@ public class MainView : Node2D
 	{
 		translationManager = new TranslationManager();
 
-		TextEditor = this.GetChild<TextEditor>();
-
-		TextEditor.TextChanged += TextEditor_TextChanged;
-
-		TextEditor.SetLabelText("Search:");
-
-		TextEditor.SetFont(fontPath);
-
 		APIkey = (TextEdit)this.GetChildByName(nameof(APIkey));
 
 		DDOpen = (FileDialog)this.GetChildByName(nameof(DDOpen));
@@ -69,6 +63,8 @@ public class MainView : Node2D
 		FDSaveAs = (FileDialog)this.GetChildByName(nameof(FDSaveAs));
 
 		FDMerge = (FileDialog)this.GetChildByName(nameof(FDMerge));
+
+		FDExport = (FileDialog)this.GetChildByName(nameof(FDExport));
 
 		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
@@ -92,11 +88,19 @@ public class MainView : Node2D
 
 		FoundLabel = (Label)this.GetChildByName(nameof(FoundLabel));
 
-		MockCheckBox = this.GetChild<CheckBox>();
-
 		LEFilePath = (LineEdit)this.GetChildByName(nameof(LEFilePath));
 
 		LEAddKey = (LineEdit)this.GetChildByName(nameof(LEAddKey));
+
+		TextEditor = this.GetChild<TextEditor>();
+
+		TextEditor.TextChanged += TextEditor_TextChanged;
+
+		TextEditor.SetLabelText("Search:");
+
+		TextEditor.SetFont(fontPath);
+
+		MockCheckBox = this.GetChild<CheckBox>();
 
 		MockCheckBox.Pressed = true;
 
@@ -139,28 +143,23 @@ public class MainView : Node2D
 
 	private void _on_Button_button_up()
 	{
-		if (!DDOpen.Visible)
-		{
-			DDOpen.Popup_();
-		}
-	}
-	
-	private void _on_Keys_item_selected(int index)
-	{
-		translationManager.SelectKeyByIndex(index);
-
-		CurrentKey.Text = translationManager.GetCurrentKey();
-
-		CurrentKey.Visible = true;
-
-		UpateTextFields();
+		DDOpen.Popup_();
 	}
 
-	private void UpateTextFields()
+	private void _on_Button4_button_up()
 	{
-		ReferenceTextEdit.Text = translationManager.GetReferenceText();
+		FDSaveAs.Popup_();
+	}
 
-		TargetTextEdit.Text = translationManager.GetTargetText();
+
+	private void _on_Button8_button_up()
+	{
+		FDMerge.Popup_();
+	}
+
+	private void _on_Button9_button_up()
+	{
+		FDExport.Popup_();
 	}
 	
 	private void _on_FileDialog_file_selected(String path)
@@ -179,8 +178,44 @@ public class MainView : Node2D
 
 		Keys.DisableTooltips();
 	}
-	
-		
+
+	private void _on_FDMerge_file_selected(String path)
+	{
+		translationManager.MergeFiles(path);
+
+		TargetLanguage.Clear();
+
+		ReferenceLanguage.Clear();
+
+		translationManager.GetAllLanguages().ForEach(l => { TargetLanguage.AddItem(l); ReferenceLanguage.AddItem(l); });
+
+		Keys.Clear();
+
+		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
+	}
+
+	private void _on_FDExport_file_selected(String path)
+	{
+		translationManager.ExportPartial(path);
+	}
+
+
+	private void _on_FDSaveAs_file_selected(String path)
+	{
+		translationManager.SaveData(path);
+	}
+
+	private void _on_Keys_item_selected(int index)
+	{
+		translationManager.SelectKeyByIndex(index);
+
+		CurrentKey.Text = translationManager.GetCurrentKey();
+
+		CurrentKey.Visible = true;
+
+		UpateTextFields();
+	}
+
 	private void _on_TargetLanguage_item_selected(int index)
 	{
 		translationManager.SelectTargetLanguage(index);
@@ -203,6 +238,13 @@ public class MainView : Node2D
 		UpateTextFields();
 	}
 
+	private void UpateTextFields()
+	{
+		ReferenceTextEdit.Text = translationManager.GetReferenceText();
+
+		TargetTextEdit.Text = translationManager.GetTargetText();
+	}
+
 	private void _on_HTTPRequest_request_completed(int result, int response_code, String[] headers, byte[] body)
 	{
 		TargetTextEdit.Text = translationManager.HandleAPIResponse(result, response_code, headers, body);
@@ -218,18 +260,6 @@ public class MainView : Node2D
 	private void _on_Button3_button_up()
 	{
 		translationManager.SaveData();
-	}
-
-
-
-	private void _on_Button4_button_up()
-	{
-		FDSaveAs.Popup_();
-	}
-	
-	private void _on_FDSaveAs_file_selected(String path)
-	{
-		translationManager.SaveData(path);
 	}
 
 
@@ -272,19 +302,12 @@ public class MainView : Node2D
 
 		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
 	}
-	
-	private void _on_Button8_button_up()
-	{
-		FDMerge.Popup_();
-	}
-	
-	
-	private void _on_FDMerge_file_selected(String path)
-	{
-		translationManager.MergeFiles(path);
-	}
 
 }
+
+
+
+
 
 
 

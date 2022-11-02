@@ -12,6 +12,7 @@ margin_top = 21.0
 margin_right = 73.0
 margin_bottom = 41.0
 rect_min_size = Vector2( 60, 0 )
+hint_tooltip = "Open a csv tranlsation file. "
 text = "Open"
 
 [node name="Button3" type="Button" parent="."]
@@ -67,6 +68,15 @@ current_dir = "/Users/Viktor/Documents/GitHub/godot-localization-editor"
 current_path = "/Users/Viktor/Documents/GitHub/godot-localization-editor/"
 
 [node name="FDMerge" type="FileDialog" parent="."]
+margin_left = 100.0
+margin_top = 100.0
+margin_right = 800.0
+margin_bottom = 500.0
+access = 2
+current_dir = "/Users/Viktor/Documents/GitHub/godot-localization-editor"
+current_path = "/Users/Viktor/Documents/GitHub/godot-localization-editor/"
+
+[node name="FDExport" type="FileDialog" parent="."]
 margin_left = 100.0
 margin_top = 100.0
 margin_right = 800.0
@@ -158,6 +168,7 @@ margin_left = 681.0
 margin_top = 465.0
 margin_right = 827.0
 margin_bottom = 485.0
+hint_tooltip = "Translates the reference text by using the DeepL API."
 text = "Tranlsate with DeepL"
 
 [node name="APIkey" type="TextEdit" parent="."]
@@ -250,6 +261,7 @@ margin_left = 681.0
 margin_top = 148.0
 margin_right = 778.0
 margin_bottom = 168.0
+hint_tooltip = "Add a new language to the csv file."
 text = "Add language"
 
 [node name="Button7" type="Button" parent="."]
@@ -257,6 +269,7 @@ margin_left = 790.0
 margin_top = 148.0
 margin_right = 887.0
 margin_bottom = 168.0
+hint_tooltip = "Create a new key and fill the entry with \"MT\" placeholder texts."
 text = "Add new key"
 
 [node name="Button8" type="Button" parent="."]
@@ -264,7 +277,16 @@ margin_left = 681.0
 margin_top = 180.0
 margin_right = 764.0
 margin_bottom = 200.0
+hint_tooltip = "Choose a csv file, then merge its content with the base file. Only entries with the value of \"MT\" will be replaced."
 text = "Merge files"
+
+[node name="Button9" type="Button" parent="."]
+margin_left = 681.0
+margin_top = 212.0
+margin_right = 777.0
+margin_bottom = 232.0
+hint_tooltip = "Export only the reference and target languages.."
+text = "Export partial"
 
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
 [connection signal="button_up" from="Button3" to="." method="_on_Button3_button_up"]
@@ -275,6 +297,7 @@ text = "Merge files"
 [connection signal="file_selected" from="DDOpen" to="." method="_on_FileDialog_file_selected"]
 [connection signal="file_selected" from="FDSaveAs" to="." method="_on_FDSaveAs_file_selected"]
 [connection signal="file_selected" from="FDMerge" to="." method="_on_FDMerge_file_selected"]
+[connection signal="file_selected" from="FDExport" to="." method="_on_FDExport_file_selected"]
 [connection signal="text_changed" from="TargetTextEdit" to="." method="_on_TargetTextEdit_text_changed"]
 [connection signal="button_up" from="Button2" to="." method="_on_Button2_button_up"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
@@ -282,3 +305,4 @@ text = "Merge files"
 [connection signal="button_up" from="Button6" to="." method="_on_Button6_button_up"]
 [connection signal="button_up" from="Button7" to="." method="_on_Button7_button_up"]
 [connection signal="button_up" from="Button8" to="." method="_on_Button8_button_up"]
+[connection signal="button_up" from="Button9" to="." method="_on_Button9_button_up"]
