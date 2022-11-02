@@ -4,15 +4,8 @@ using godotlocalizationeditor;
 using System;
 using System.Linq;
 using System.Text;
-using System.Net;
-using System.Xml.Linq;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.Web;
-using System.IO;
 using File = Godot.File;
-using System.Web.UI.WebControls;
-using System.Reflection;
 
 namespace godotlocalizationeditor
 {
@@ -112,17 +105,29 @@ namespace godotlocalizationeditor
             targetTextIndex = newIndex;
         }
 
-        public void CallAPI(HTTPRequest hTTPRequest, string apiKey, bool mock)
+        public void CallAPI(HTTPRequest hTTPRequest, TranslationRequestParams trParams)
         {
-            var auth = $"Authorization: DeepL-Auth-Key {apiKey}";
+            var auth = $"Authorization: DeepL-Auth-Key {trParams.APIKey}";
 
             var contentTpye = "Content-Type: application/json";
 
-            var message = new ApiMessage() { text = "Hello!", source_lang = "HU", target_lang = "RU" };
+            var targetLang = languagesList[targetTextIndex].Substr(0, 2).ToUpper();
+
+            var sourceLang = languagesList[referenceTextIndex].Substr(0, 2).ToUpper();
+
+            var textToTranslate = trParams.Text;
+
+            var message = new ApiMessage() { text = textToTranslate, source_lang = sourceLang, target_lang = targetLang };
 
             var jsonMessage = JsonConvert.SerializeObject(message);
 
-            var url = mock ? "http://localhost:3000/v2/translate" : "https://api-free.deepl.com/v2/translate";
+            var url = trParams.Mock ? "http://localhost:3000/v2/translate" : "https://api-free.deepl.com/v2/translate";
+
+            DebugHelper.PrettyPrintVerbose($"Calling DeepL API with data:");
+            DebugHelper.PrettyPrintVerbose($"-- mock:{trParams.Mock}");
+            DebugHelper.PrettyPrintVerbose($"-- source language:{sourceLang}");
+            DebugHelper.PrettyPrintVerbose($"-- target language:{targetLang}");
+            DebugHelper.PrettyPrintVerbose($"-- text:{trParams.Text}");
 
             hTTPRequest.Request(url, new string[] { auth, contentTpye }, true, HTTPClient.Method.Post, jsonMessage);
         }

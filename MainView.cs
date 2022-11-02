@@ -253,7 +253,16 @@ public class MainView : Node2D
 	
 	private void _on_Button2_button_up()
 	{
-		translationManager.CallAPI(hTTPRequest, APIkey.Text, MockCheckBox.Pressed);
+		var trParams = new TranslationRequestParams()
+		{
+			APIKey = APIkey.Text,
+
+			Mock = MockCheckBox.Pressed,
+
+			Text = ReferenceTextEdit.Text,
+		};
+
+		translationManager.CallAPI(hTTPRequest, trParams);
 	}
 	
 	

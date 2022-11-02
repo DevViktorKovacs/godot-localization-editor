@@ -1,8 +1,6 @@
 using Godot;
 using godotlocalizationeditor;
 using System;
-using System.Text.RegularExpressions;
-
 
 public class TextEditor : Control
 {

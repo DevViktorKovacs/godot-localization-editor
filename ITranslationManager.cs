@@ -1,9 +1,6 @@
 ﻿using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace godotlocalizationeditor
 {
@@ -31,7 +28,7 @@ namespace godotlocalizationeditor
 
         void SelectTargetLanguage(int newIndex);
 
-        void CallAPI(HTTPRequest hTTPRequest, string apiKey, bool mock);
+        void CallAPI(HTTPRequest hTTPRequest, TranslationRequestParams trParams);
 
         string HandleAPIResponse(int result, int response_code, String[] headers, byte[] body);
 
