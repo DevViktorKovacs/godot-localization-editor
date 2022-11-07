@@ -403,5 +403,21 @@ namespace godotlocalizationeditor
         {
             localizations[targetTextIndex].Texts[selectedKey] = localizations[referenceTextIndex].Texts[selectedKey];
         }
+
+        public void ExportKeys(string path)
+        {
+            var file = new File();
+
+            file.Open(path, File.ModeFlags.Write);
+
+            for (int i = 0; i < keysList.Count(); i++)
+            {
+                file.StoreLine($"\"{keysList[i]}\",");
+            }
+
+            file.Close();
+
+            DebugHelper.PrettyPrintVerbose($"Keys saved to: {path} ");
+        }
     }
 }

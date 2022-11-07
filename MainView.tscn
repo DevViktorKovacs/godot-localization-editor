@@ -85,6 +85,15 @@ access = 2
 current_dir = "/Users/Viktor/Documents/GitHub/godot-localization-editor"
 current_path = "/Users/Viktor/Documents/GitHub/godot-localization-editor/"
 
+[node name="FDExportKeys" type="FileDialog" parent="."]
+margin_left = 100.0
+margin_top = 100.0
+margin_right = 800.0
+margin_bottom = 500.0
+access = 2
+current_dir = "/Users/Viktor/Documents/GitHub/godot-localization-editor"
+current_path = "/Users/Viktor/Documents/GitHub/godot-localization-editor/"
+
 [node name="TextEditor" parent="." instance=ExtResource( 2 )]
 margin_left = 679.0
 margin_top = 303.0
@@ -296,6 +305,13 @@ margin_bottom = 420.0
 hint_tooltip = "Copy the content of the reference text to the target field. (F4)"
 text = "Copy-Paste"
 
+[node name="Button11" type="Button" parent="."]
+margin_left = 681.0
+margin_top = 244.0
+margin_right = 766.0
+margin_bottom = 264.0
+text = "Export keys"
+
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
 [connection signal="button_up" from="Button3" to="." method="_on_Button3_button_up"]
 [connection signal="button_up" from="Button4" to="." method="_on_Button4_button_up"]
@@ -306,6 +322,7 @@ text = "Copy-Paste"
 [connection signal="file_selected" from="FDSaveAs" to="." method="_on_FDSaveAs_file_selected"]
 [connection signal="file_selected" from="FDMerge" to="." method="_on_FDMerge_file_selected"]
 [connection signal="file_selected" from="FDExport" to="." method="_on_FDExport_file_selected"]
+[connection signal="file_selected" from="FDExportKeys" to="." method="_on_FDExportKeys_file_selected"]
 [connection signal="text_changed" from="TargetTextEdit" to="." method="_on_TargetTextEdit_text_changed"]
 [connection signal="button_up" from="Button2" to="." method="_on_Button2_button_up"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
@@ -315,3 +332,4 @@ text = "Copy-Paste"
 [connection signal="button_up" from="Button8" to="." method="_on_Button8_button_up"]
 [connection signal="button_up" from="Button9" to="." method="_on_Button9_button_up"]
 [connection signal="button_up" from="Button10" to="." method="_on_Button10_button_up"]
+[connection signal="button_up" from="Button11" to="." method="_on_Button11_button_up"]

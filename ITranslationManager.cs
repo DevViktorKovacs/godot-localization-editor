@@ -42,6 +42,8 @@ namespace godotlocalizationeditor
 
         void ExportPartial(String path);
 
+        void ExportKeys(String path);
+
         void Copy();
 
         List<string> GetKeysBySearchTerm(string searchTerm);

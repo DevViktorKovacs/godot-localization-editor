@@ -39,6 +39,8 @@ public class MainView : Node2D
 
 	FileDialog FDExport;
 
+	FileDialog FDExportKeys;
+
 	CheckBox MockCheckBox;
 
 	LineEdit LEFilePath;
@@ -66,6 +68,8 @@ public class MainView : Node2D
 		FDMerge = (FileDialog)this.GetChildByName(nameof(FDMerge));
 
 		FDExport = (FileDialog)this.GetChildByName(nameof(FDExport));
+
+		FDExportKeys = (FileDialog)this.GetChildByName(nameof(FDExportKeys));
 
 		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
 
@@ -241,6 +245,12 @@ public class MainView : Node2D
 	{
 		translationManager.SaveData(path);
 	}
+	
+	
+	private void _on_FDExportKeys_file_selected(String path)
+	{
+		translationManager.ExportKeys(path);
+	}
 
 	private void _on_Keys_item_selected(int index)
 	{
@@ -361,8 +371,18 @@ public class MainView : Node2D
 
 		UpateTextFields();
 	}
+	
+	
+	private void _on_Button11_button_up()
+	{
+		FDExportKeys.Popup_();
+	}
 
 }
+
+
+
+
 
 
 
