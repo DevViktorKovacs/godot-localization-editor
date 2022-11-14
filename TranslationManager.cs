@@ -192,10 +192,19 @@ namespace godotlocalizationeditor
 
             ProcessFileData(lines, sisterLocalizations, sisterKeys);
 
+            var languagesString = "";
+
+            sisterLanguagesList.ForEach(l => { languagesString = $"{languagesString} {l},"; });
+
+            DebugHelper.PrettyPrintVerbose($"Loaded csv: {path} - Languages: {languagesString} - number of keys: {sisterKeys.Count}");
+
+            var mergeCount = 0;
 
             for (int j = 0; j < sisterLanguagesList.Count; j++)
             {
                 var currentSisterLocalizedText = sisterLocalizations[j];
+
+                DebugHelper.PrettyPrintVerbose($"Processing language: {currentSisterLocalizedText.Locale}");
 
                 var currentLocalizedText = localizations.Where(l => l.Value.Locale == sisterLanguagesList[j]).FirstOrDefault().Value;
 
@@ -210,6 +219,8 @@ namespace godotlocalizationeditor
                 {
                     var currentSisterKey = sisterKeys[i];
 
+                    if (currentSisterKey == String.Empty) continue;
+
                     if (!currentLocalizedText.Texts.TryGetValue(currentSisterKey, out _))
                     {
                         AddNewKey(currentSisterKey);
@@ -218,9 +229,13 @@ namespace godotlocalizationeditor
                     if (currentLocalizedText.Texts[currentSisterKey] == "MT" && currentSisterLocalizedText.Texts[currentSisterKey] != "MT")
                     {
                         currentLocalizedText.Texts[currentSisterKey] = currentSisterLocalizedText.Texts[currentSisterKey];
+
+                        mergeCount++;
                     }
                 }
             }
+
+            DebugHelper.PrettyPrintVerbose($"Merge completed! {mergeCount} entries merged!");
 
         }
 
@@ -267,7 +282,7 @@ namespace godotlocalizationeditor
             {
                 var line = lines[i].Split(";");
 
-                ProcessLine(line, localizations, keysList);
+                ProcessLine(line, localizationDictionary, loaclizationKeys);
             }
         }
 
