@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using File = Godot.File;
-using System.Net.Http;
 
 namespace godotlocalizationeditor
 {
@@ -77,7 +76,6 @@ namespace godotlocalizationeditor
 
             return localizations[targetTextIndex].Texts[selectedKey];
         }
-
 
         public void UpdateTargetLanguage(string newText)
         {
@@ -169,7 +167,6 @@ namespace godotlocalizationeditor
 
             return string.Empty;
         }
-
 
         public void MergeFiles(string path)
         {
@@ -278,9 +275,13 @@ namespace godotlocalizationeditor
 
         private void ProcessFileData(List<string> lines, Dictionary<int, LocalizedTexts> localizationDictionary, List<string> loaclizationKeys)
         {
+            DebugHelper.PrettyPrintVerbose($"Processing keys...", ConsoleColor.DarkYellow);
+
             for (int i = 1; i < lines.Count; i++)
             {
                 var line = lines[i].Split(";");
+
+                DebugHelper.PrettyPrintVerbose($"{i}: {line.FirstOrDefault()}", ConsoleColor.Yellow);
 
                 ProcessLine(line, localizationDictionary, loaclizationKeys);
             }
@@ -292,14 +293,25 @@ namespace godotlocalizationeditor
 
             loaclizationKeys.Add(key);
 
-            for (int c = 1; c < line.Length; c++)
+            try
             {
-                if (localizationDictionary[c - 1] == null) continue;
 
-                if (!localizationDictionary[c - 1].Texts.Any(t => t.Key == key))
+                for (int c = 1; c < line.Length; c++)
                 {
-                    localizationDictionary[c - 1].Texts.Add(key, line[c]);
+                    if (localizationDictionary[c - 1] == null) continue;
+
+                    if (!localizationDictionary[c - 1].Texts.Any(t => t.Key == key))
+                    {
+                        localizationDictionary[c - 1].Texts.Add(key, line[c]);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                DebugHelper.PrettyPrintVerbose("Conversion failed!", ConsoleColor.Red);
+
+                DebugHelper.PrettyPrintVerbose(ex);
+
             }
         }
 
@@ -318,19 +330,31 @@ namespace godotlocalizationeditor
 
             result.Add(firstLine);
 
-            for (int i = 0; i < keysList.Count(); i++)
+            try
             {
-                var newLine = keysList[i];
 
-                if (newLine == String.Empty) continue;
-
-                for (int j = 0; j < languagesToSave.Count; j++)
+                for (int i = 0; i < keysList.Count(); i++)
                 {
-                    newLine = $"{newLine};{localizationDictionary[j].Texts[keysList[i]]}";
-                }
+                    var newLine = keysList[i];
 
-                result.Add(newLine);
-            
+                    if (newLine == String.Empty) continue;
+
+                    for (int j = 0; j < languagesToSave.Count; j++)
+                    {
+                        newLine = $"{newLine};{localizationDictionary[j].Texts[keysList[i]]}";
+                    }
+
+                    result.Add(newLine);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugHelper.PrettyPrintVerbose("Conversion failed!", ConsoleColor.Red);
+
+                DebugHelper.PrettyPrintVerbose(ex);
+
+                return null;
             }
 
             return result;
@@ -354,6 +378,8 @@ namespace godotlocalizationeditor
         private void StoreLinesToFile(string path, Dictionary<int, LocalizedTexts> localizationDictionary, List<string> languagesToSave)
         {
             var lines = GetAllLines(localizationDictionary, languagesToSave);
+
+            if (lines == null) return;
 
             var file = new File();
 
@@ -417,6 +443,19 @@ namespace godotlocalizationeditor
         public void Copy()
         {
             localizations[targetTextIndex].Texts[selectedKey] = localizations[referenceTextIndex].Texts[selectedKey];
+        }
+
+        public void Clear()
+        {
+            localizations[targetTextIndex].Texts[selectedKey] = "MT";
+        }
+
+        public void ClearAll()
+        {
+            for (int i = 0; i < keysList.Count; i++)
+            {
+                localizations[targetTextIndex].Texts[keysList[i]] = "MT";
+            }
         }
 
         public void ExportKeys(string path)

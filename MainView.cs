@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using godotlocalizationeditor;
 using System;
 using System.Linq;
-using System.Text;
 
 public class MainView : Node2D
 {
@@ -59,53 +58,13 @@ public class MainView : Node2D
 	{
 		translationManager = new TranslationManager();
 
-		APIkey = (TextEdit)this.GetChildByName(nameof(APIkey));
-
-		DDOpen = (FileDialog)this.GetChildByName(nameof(DDOpen));
-
-		FDSaveAs = (FileDialog)this.GetChildByName(nameof(FDSaveAs));
-
-		FDMerge = (FileDialog)this.GetChildByName(nameof(FDMerge));
-
-		FDExport = (FileDialog)this.GetChildByName(nameof(FDExport));
-
-		FDExportKeys = (FileDialog)this.GetChildByName(nameof(FDExportKeys));
-
-		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
-
-		ReferenceTextEdit.SetLangugeSpecificTheme(fontPath);
-
-		TargetTextEdit = (TextEdit)this.GetChildByName(nameof(TargetTextEdit));
-
-		TargetTextEdit.SetLangugeSpecificTheme(fontPath);
-
-		TargetLanguage = (ItemList) this.GetChildByName(nameof(TargetLanguage));
-
-		ReferenceLanguage = (ItemList)this.GetChildByName(nameof(ReferenceLanguage));
-
-		Keys = (ItemList)this.GetChildByName(nameof(Keys));
-
-		CurrentKey = (Label)this.GetChildByName(nameof(CurrentKey));
-
-		TargetTextLabel = (Label)this.GetChildByName(nameof(TargetTextLabel));
-
-		ReferenceTextLabel = (Label)this.GetChildByName(nameof(ReferenceTextLabel));
-
-		FoundLabel = (Label)this.GetChildByName(nameof(FoundLabel));
-
-		LEFilePath = (LineEdit)this.GetChildByName(nameof(LEFilePath));
-
-		LEAddKey = (LineEdit)this.GetChildByName(nameof(LEAddKey));
-
-		TextEditor = this.GetChild<TextEditor>();
+		InitializeControls();
 
 		TextEditor.TextChanged += TextEditor_TextChanged;
 
 		TextEditor.SetLabelText("Search:");
 
 		TextEditor.SetFont(fontPath);
-
-		MockCheckBox = this.GetChild<CheckBox>();
 
 		MockCheckBox.Pressed = true;
 
@@ -119,7 +78,6 @@ public class MainView : Node2D
 
 		foundKeys = new List<string>();
 
-		hTTPRequest = this.GetChild<HTTPRequest>();
 	}
 
 	public override void _Input(InputEvent @event)
@@ -146,6 +104,13 @@ public class MainView : Node2D
 			if (input == "F4")
 			{
 				translationManager.Copy();
+
+				UpateTextFields();
+			}
+
+			if (input == "F2")
+			{
+				translationManager.Clear();
 
 				UpateTextFields();
 			}
@@ -185,7 +150,6 @@ public class MainView : Node2D
 	{
 		FDSaveAs.Popup_();
 	}
-
 
 	private void _on_Button8_button_up()
 	{
@@ -240,13 +204,11 @@ public class MainView : Node2D
 		translationManager.ExportPartial(path);
 	}
 
-
 	private void _on_FDSaveAs_file_selected(String path)
 	{
 		translationManager.SaveData(path);
 	}
-	
-	
+		
 	private void _on_FDExportKeys_file_selected(String path)
 	{
 		translationManager.ExportKeys(path);
@@ -304,7 +266,6 @@ public class MainView : Node2D
 		translationManager.UpdateTargetLanguage(TargetTextEdit.Text);
 	}
 
-
 	private void _on_Button2_button_up()
 	{
 		CallAPI();
@@ -323,8 +284,7 @@ public class MainView : Node2D
 
 		translationManager.CallAPI(hTTPRequest, trParams);
 	}
-	
-	
+		
 	private void _on_Button3_button_up()
 	{
 		translationManager.SaveData();
@@ -362,8 +322,7 @@ public class MainView : Node2D
 		Keys.Clear();
 
 		translationManager.GetAllKeys().ForEach(k => Keys.AddItem(k));
-	}
-	
+	}	
 	
 	private void _on_Button10_button_up()
 	{
@@ -371,14 +330,76 @@ public class MainView : Node2D
 
 		UpateTextFields();
 	}
-	
-	
+		
 	private void _on_Button11_button_up()
 	{
 		FDExportKeys.Popup_();
+	}	
+	
+	private void _on_Button12_button_up()
+	{
+		translationManager.Clear();
+
+		UpateTextFields();
+	}	
+
+	private void _on_Button13_button_up()
+	{
+		translationManager.ClearAll();
+
+		UpateTextFields();
+	}
+
+	private void InitializeControls()
+	{
+		APIkey = (TextEdit)this.GetChildByName(nameof(APIkey));
+
+		DDOpen = (FileDialog)this.GetChildByName(nameof(DDOpen));
+
+		FDSaveAs = (FileDialog)this.GetChildByName(nameof(FDSaveAs));
+
+		FDMerge = (FileDialog)this.GetChildByName(nameof(FDMerge));
+
+		FDExport = (FileDialog)this.GetChildByName(nameof(FDExport));
+
+		FDExportKeys = (FileDialog)this.GetChildByName(nameof(FDExportKeys));
+
+		ReferenceTextEdit = (TextEdit)this.GetChildByName(nameof(ReferenceTextEdit));
+
+		ReferenceTextEdit.SetLangugeSpecificTheme(fontPath);
+
+		TargetTextEdit = (TextEdit)this.GetChildByName(nameof(TargetTextEdit));
+
+		TargetTextEdit.SetLangugeSpecificTheme(fontPath);
+
+		TargetLanguage = (ItemList)this.GetChildByName(nameof(TargetLanguage));
+
+		ReferenceLanguage = (ItemList)this.GetChildByName(nameof(ReferenceLanguage));
+
+		Keys = (ItemList)this.GetChildByName(nameof(Keys));
+
+		CurrentKey = (Label)this.GetChildByName(nameof(CurrentKey));
+
+		TargetTextLabel = (Label)this.GetChildByName(nameof(TargetTextLabel));
+
+		ReferenceTextLabel = (Label)this.GetChildByName(nameof(ReferenceTextLabel));
+
+		FoundLabel = (Label)this.GetChildByName(nameof(FoundLabel));
+
+		LEFilePath = (LineEdit)this.GetChildByName(nameof(LEFilePath));
+
+		LEAddKey = (LineEdit)this.GetChildByName(nameof(LEAddKey));
+
+		TextEditor = this.GetChild<TextEditor>();
+
+		MockCheckBox = this.GetChild<CheckBox>();
+
+		hTTPRequest = this.GetChild<HTTPRequest>();
 	}
 
 }
+
+
 
 
 

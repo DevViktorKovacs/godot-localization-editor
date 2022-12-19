@@ -46,6 +46,10 @@ namespace godotlocalizationeditor
 
         void Copy();
 
+        void Clear();
+
+        void ClearAll();
+
         List<string> GetKeysBySearchTerm(string searchTerm);
 
         List<string> GetAllLines(Dictionary<int, LocalizedTexts> localizationDictionary, List<string> languagesToSave);

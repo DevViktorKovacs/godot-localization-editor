@@ -65,8 +65,6 @@ margin_left = 100.0
 margin_top = 100.0
 margin_right = 800.0
 margin_bottom = 500.0
-window_title = "Open a File"
-mode = 0
 access = 2
 current_dir = "/Users/Viktor/Documents/GitHub/godot-localization-editor"
 current_path = "/Users/Viktor/Documents/GitHub/godot-localization-editor/"
@@ -318,6 +316,22 @@ margin_right = 766.0
 margin_bottom = 264.0
 text = "Export keys"
 
+[node name="Button12" type="Button" parent="."]
+margin_left = 775.0
+margin_top = 400.0
+margin_right = 819.0
+margin_bottom = 420.0
+hint_tooltip = "Reset content of the target text to 'MT'. (F2)"
+text = "Clear"
+
+[node name="Button13" type="Button" parent="."]
+margin_left = 830.0
+margin_top = 400.0
+margin_right = 889.0
+margin_bottom = 420.0
+hint_tooltip = "Resets all entries for the target language to 'MT'"
+text = "Cear all"
+
 [connection signal="button_up" from="Button" to="." method="_on_Button_button_up"]
 [connection signal="button_up" from="Button3" to="." method="_on_Button3_button_up"]
 [connection signal="button_up" from="Button4" to="." method="_on_Button4_button_up"]
@@ -339,3 +353,5 @@ text = "Export keys"
 [connection signal="button_up" from="Button9" to="." method="_on_Button9_button_up"]
 [connection signal="button_up" from="Button10" to="." method="_on_Button10_button_up"]
 [connection signal="button_up" from="Button11" to="." method="_on_Button11_button_up"]
+[connection signal="button_up" from="Button12" to="." method="_on_Button12_button_up"]
+[connection signal="button_up" from="Button13" to="." method="_on_Button13_button_up"]
